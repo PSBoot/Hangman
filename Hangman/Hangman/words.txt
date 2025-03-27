@@ -1,9 +1,0 @@
-// This is a list of words to guess in the game "Hangman".
-// Words are chosen at random from the list.
-// Feel free to add or remove words.
-// Place one word (or multiple words sperated by spaces) on each line.
-// Special characters and capitalisation will be ignored.
-
-hello world
-programming
-application
