@@ -26,14 +26,12 @@ def print_ui(censored_word, correct_characters, incorrect_characters, message):
     print(message)
 
 # Game logic
-def guessing_game(word_list):
+def guessing_game(word_list, previous_random):
     # Get random word from word list, ensuring the word is different from the previous random word
-    previous_random = -1
     this_random = random.randint(0,len(word_list)-1)
     while this_random == previous_random:
         this_random = random.randint(0,len(word_list)-1)
     word = word_list[this_random]
-    previous_random = this_random
 
     # Set game variables to starting values
     game_over = False
@@ -106,7 +104,7 @@ def guessing_game(word_list):
 
     # Play game again after any input
     menu_input = input()
-    guessing_game(word_list)
+    guessing_game(word_list, this_random)
         
 # Replace letters in a word that haven't been guessed with underscores
 def censor_word(word, guessed_characters):
@@ -204,4 +202,4 @@ if len(word_list) == 0:
     word_list.append("python")
 
 # Start game
-guessing_game(word_list)
+guessing_game(word_list, -1)
