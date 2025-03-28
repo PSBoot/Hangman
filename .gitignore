@@ -1,0 +1,5 @@
+/.vs
+/Hangman/_internal
+/Hangman/build
+/Hangman/dist
+Hangman/Hangman.spec
