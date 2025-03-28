@@ -26,86 +26,103 @@ def print_ui(censored_word, correct_characters, incorrect_characters, message):
     print(message)
 
 # Game logic
-def guessing_game(word_list, previous_random):
-    # Get random word from word list, ensuring the word is different from the previous random word
-    this_random = random.randint(0,len(word_list)-1)
-    while this_random == previous_random:
-        this_random = random.randint(0,len(word_list)-1)
-    word = word_list[this_random]
-
-    # Set game variables to starting values
-    game_over = False
-    won = False
-    correct_characters = []
-    incorrect_characters = []
-    message = "The word contains " + str(len(word)) + " letters. You lose after 6 incorrect guesses. Guess the word to win. Good luck!"
-
-    # Print game UI
-    print_ui(censor_word(word, correct_characters), correct_characters, incorrect_characters, message)
+def guessing_game(word_list):
+    previous_random = 0
+    play = True
 
     # Main game loop
-    while not game_over:
+    while play:
 
-        # Ask for letter or word input
-        print("Enter a letter or word to guess:")
-        menu_input = input().lower()
+        # Get random word from word list
+        this_random = random.randint(0,len(word_list)-1)
 
-        # Evaluate input
-        if not menu_input or menu_input.isspace() or any(not c.isalpha() and not c == " " for c in menu_input):
-            # Input is empty, contains only whitespace or contains special characters
-            message = "The input \"" + menu_input + "\" is invalid."
+        # Ensure the random word is different from the last word, if possible
+        while len(word_list) > 1 and this_random == previous_random:
+            this_random = random.randint(0,len(word_list)-1)
+        word = word_list[this_random]
+        previous_random = this_random
 
-        elif len(menu_input) == 1 and menu_input in string.ascii_letters:
-            # Input is a letter
-            if menu_input in correct_characters + incorrect_characters:
-                # Input letter has already been guessed
-                message = "You've already guessed the letter " + menu_input + "!"
-            else:
-                if menu_input in word:
-                    # Input letter is a correct guess, added to correct letters
-                    correct_characters.append(menu_input)
-                    message = "You guessed the word contains the letter " + menu_input + ", which is correct."
-                else:
-                    # Input letter is an incorrect guess, added to incorrect letters
-                    incorrect_characters.append(menu_input)
-                    message = "You guessed the word contains the letter " + menu_input + ", which is incorrect."
-
-        elif menu_input == word:
-            # Input word is a correct match, game is won
-            game_over = True
-            won = True
-            message = "You guessed the word is " + menu_input + ", which is correct."
-        elif menu_input in incorrect_characters:
-            # Input word has already been guessed
-            message = "You've already guessed the word " + menu_input + "!"
-        else:
-            # Input word is an incorrect guess
-            incorrect_characters.append(menu_input)
-            message = "You guessed the word is " + menu_input + ", which is incorrect."
-
-        # Game is won if all letters in a word are revealed by correct guesses
-        if not "_" in censor_word(word, correct_characters):
-            game_over = True
-            won = True
-
-        # Game is lost if the number of incorrect guesses reaches 6
-        if len(incorrect_characters) >= 6:
-            game_over = True
+        # Set game variables to starting values
+        game_over = False
+        won = False
+        correct_characters = []
+        incorrect_characters = []
+        message = "The word contains " + str(len(word)) + " letters. You lose after 6 incorrect guesses. Guess the word to win. Good luck!"
 
         # Print game UI
         print_ui(censor_word(word, correct_characters), correct_characters, incorrect_characters, message)
 
-    # Print game won or lost messages
-    print("")
-    if won == True:
-        print("You win! Press any button to play again.")
-    else:
-        print("You lost! The correct word was " + word + ". Press any button to play again.")
+        # Guessing turn loop
+        while not game_over:
 
-    # Play game again after any input
-    menu_input = input()
-    guessing_game(word_list, this_random)
-        
+            # Ask for letter or word input
+            print("Enter a letter or word to guess:")
+            menu_input = input().lower()
+
+            # Evaluate input
+            if not menu_input or menu_input.isspace() or any(not c.isalpha() and not c == " " for c in menu_input):
+                # Input is empty, contains only whitespace or contains special characters
+                message = "The input \"" + menu_input + "\" is invalid."
+
+            elif len(menu_input) == 1 and menu_input in string.ascii_letters:
+                # Input is a letter
+                if menu_input in correct_characters + incorrect_characters:
+                    # Input letter has already been guessed
+                    message = "You've already guessed the letter " + menu_input + "!"
+                else:
+                    if menu_input in word:
+                        # Input letter is a correct guess, added to correct letters
+                        correct_characters.append(menu_input)
+                        message = "You guessed the word contains the letter " + menu_input + ", which is correct."
+                    else:
+                        # Input letter is an incorrect guess, added to incorrect letters
+                        incorrect_characters.append(menu_input)
+                        message = "You guessed the word contains the letter " + menu_input + ", which is incorrect."
+
+            elif menu_input == word:
+                # Input word is a correct match, game is won
+                game_over = True
+                won = True
+                message = "You guessed the word is " + word + ", which is correct.\n\nYou win! Input 1 to play again. Input 2 to quit."
+            elif menu_input in incorrect_characters:
+                # Input word has already been guessed
+                message = "You've already guessed the word " + menu_input + "!"
+            else:
+                # Input word is an incorrect guess
+                incorrect_characters.append(menu_input)
+                message = "You guessed the word is " + menu_input + ", which is incorrect."
+
+            if not "_" in censor_word(word, correct_characters):
+                # All letters in a word are revealed by correct guesses, game is won
+                game_over = True
+                won = True
+                message = "You've found all the letters in the word, which was " + word + ".\n\nYou win! Input 1 to play again. Input 2 to quit."
+
+            # Game is lost if the number of incorrect guesses reaches 6
+            if len(incorrect_characters) >= 6:
+                game_over = True
+                message += "\n\nYou lost! The correct word was " + word + ". Input 1 to play again. Input 2 to quit."
+
+            # Print game UI, showing the uncensored word if the game is won
+            shown_word = censor_word(word, correct_characters)
+            if won == True:
+                shown_word = word
+            print_ui(shown_word, correct_characters, incorrect_characters, message)
+
+        # Evaluate menu input: 1 to play again, 2 to quit, any other input is invalid
+        wait = True
+        while wait:
+            menu_input = input()
+            if menu_input == "1":
+                wait = False
+            elif menu_input == "2":
+                wait = False
+                play = False
+            else:
+                message = "Invalid input. Input 1 to play again. Input 2 to quit."
+                print_ui(shown_word, correct_characters, incorrect_characters, message)
+                
+
 # Replace letters in a word that haven't been guessed with underscores
 def censor_word(word, guessed_characters):
     censored_word = ""
@@ -202,4 +219,4 @@ if len(word_list) == 0:
     word_list.append("python")
 
 # Start game
-guessing_game(word_list, -1)
+guessing_game(word_list)

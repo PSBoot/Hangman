@@ -4,6 +4,13 @@
 // Place one word (or multiple words sperated by spaces) on each line.
 // Special characters and capitalisation will be ignored.
 
-hello world
-programming
 application
+programming
+development
+compilation
+inheritance
+conditional
+expressions
+hexadecimal
+interpreter
+performance
